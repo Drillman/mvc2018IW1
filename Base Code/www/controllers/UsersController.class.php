@@ -17,18 +17,32 @@ class UsersController{
 	}
 
 	public function saveAction(){
+
 		$user = new Users();
 		$form = $user->getRegisterForm();
 
-		// Est ce qu'il y a des données dans post ou get ($form["config"]["method"])
+		//Est ce qu'il y a des données dans POST ou GET($form["config"]["method"])
 		$method = strtoupper($form["config"]["method"]);
+		$data = $GLOBALS["_".$method];
 
-		if($_SERVER['REQUEST_METHOD']==$method && !empty($GLOBALS['_'.$method])){
-			$validator = new Validator($form, $data);
+
+		if( $_SERVER['REQUEST_METHOD']==$method && !empty($data) ){
+
+			$validator = new Validator($form,$data);
+
+			if(empty($validator->errors)){
+				$user->setFirstname($data["firstname"]);
+				$user->setLastname($data["lastname"]);
+				$user->setEmail($data["email"]);
+				$user->setPwd($data["pwd"]);
+				$user->save();
+			}
+
 		}
 
 		$v = new View("addUser", "front");
 		$v->assign("form", $form);
+
 
 	}
 
